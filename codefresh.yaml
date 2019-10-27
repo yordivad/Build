@@ -1,0 +1,48 @@
+version: "1.0"
+stages:
+  - "clone"
+  - "build"
+  - "push"
+steps:
+  clone:
+    type: "git-clone"
+    description: "Cloning main repository..."
+    repo: "RoyGI/Build"
+    stage: "clone"
+  parallel_build:
+    type: "parallel"
+    stage: "build"
+    steps:
+      dotnet_build:
+        title: "Building Dotnet Image"
+        type: "build"
+        image_name: "dotnet"
+        tag: "lasted"
+        dockerfile: "Build/dotnet/2.2/sdk/Dockerfile"
+      skaffold_build:
+        title: "Building Skaffold Image"
+        type: "build"
+        image_name: "skaffold"
+        tag: "lasted"
+        dockerfile: "Build/skaffold/Dockerfile"
+  parallel_push:
+    type: "parallel"
+    steps:
+      push-dotnet:
+        title: "Pushing dotnet image to bintray"
+        type: "push"
+        image_name: "dotnet/sdk"
+        registry: "mdocker"
+        candidate: "${{dotnet_build}}"
+        tags:
+          - "2.2"
+          - "latest"
+      push-skaffold:
+        title: "Pushing skaffold image to bintray"
+        type: "push"
+        image_name: "skaffold"
+        registry: "mdocker"
+        candidate: "${{skaffold_build}}"
+        tags:
+          - "latest"
+    stage: "push"
