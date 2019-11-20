@@ -10,6 +10,9 @@ RUN apt -y install docker-ce
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.16.0/bin/linux/amd64/kubectl
 RUN chmod +x ./kubectl
 RUN mv ./kubectl /usr/local/bin/kubectl
+RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+RUN chmod 700 get_helm.sh
+RUN ./get_helm.sh
 RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
 RUN chmod +x skaffold
 RUN mv skaffold /usr/local/bin
