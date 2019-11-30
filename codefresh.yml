@@ -13,12 +13,18 @@ steps:
     type: "parallel"
     stage: "build"
     steps:
-      dotnet_build:
-        title: "Building Dotnet Image"
+      dotnet_build_v2_2:
+        title: "Building DotNet 2.2 Image"
         type: "build"
-        image_name: "dotnet"
+        image_name: "dotnet_2_2"
         tag: "lasted"
         dockerfile: "Build/dotnet/2.2/sdk/Dockerfile"
+      dotnet_build_v3_0:
+        title: "Building DotNet 3.0 Image"
+        type: "build"
+        image_name: "dotnet_3_0"
+        tag: "lasted"
+        dockerfile: "Build/dotnet/3.0/sdk/Dockerfile"
       skaffold_build:
         title: "Building Skaffold Image"
         type: "build"
@@ -27,15 +33,24 @@ steps:
         dockerfile: "Build/skaffold/Dockerfile"
   parallel_push:
     type: "parallel"
+    stage: "push"
     steps:
-      push-dotnet:
-        title: "Pushing dotnet image to bintray"
+      push-dotnet-2_2:
+        title: "Pushing dotnet 2.2 image to bintray"
         type: "push"
         image_name: "dotnet/sdk"
         registry: "mdocker"
-        candidate: "${{dotnet_build}}"
+        candidate: "${{dotnet_build_v2_2}}"
         tags:
           - "2.2"
+      push-dotnet-3_0:
+        title: "Pushing dotnet 3.0 image to bintray"
+        type: "push"
+        image_name: "dotnet/sdk"
+        registry: "mdocker"
+        candidate: "${{dotnet_build_v3_0}}"
+        tags:
+          - "3.0"
           - "latest"
       push-skaffold:
         title: "Pushing skaffold image to bintray"
@@ -45,4 +60,3 @@ steps:
         candidate: "${{skaffold_build}}"
         tags:
           - "latest"
-    stage: "push"
