@@ -5,37 +5,40 @@ stages:
   - "push"
 steps:
   clone:
+    stage: "clone"
     type: "git-clone"
     description: "Cloning main repository..."
     repo: "RoyGI/Build"
-    stage: "clone"
   parallel_build:
-    type: "parallel"
     stage: "build"
+    type: "parallel"
     steps:
       dotnet_build_v2_2:
         title: "Building DotNet 2.2 Image"
         type: "build"
         image_name: "dotnet_2_2"
         tag: "lasted"
-        dockerfile: "Build/dotnet/2.2/sdk/Dockerfile"
+        working_directory: Build
+        dockerfile: "dotnet/2.2/sdk/Dockerfile"
       dotnet_build_v3_0:
         title: "Building DotNet 3.0 Image"
         type: "build"
         image_name: "dotnet_3_0"
         tag: "lasted"
-        dockerfile: "Build/dotnet/3.0/sdk/Dockerfile"
+        working_directory: Build
+        dockerfile: "dotnet/3.0/sdk/Dockerfile"
       skaffold_build:
         title: "Building Skaffold Image"
         type: "build"
         image_name: "skaffold"
         tag: "lasted"
-        dockerfile: "Build/skaffold/Dockerfile"
+        working_directory: Build
+        dockerfile: "skaffold/Dockerfile"
   parallel_push:
-    type: "parallel"
     stage: "push"
+    type: "parallel"
     steps:
-      push-dotnet-2_2:
+      push_dotnet_2_2:
         title: "Pushing dotnet 2.2 image to bintray"
         type: "push"
         image_name: "dotnet/sdk"
@@ -43,7 +46,7 @@ steps:
         candidate: "${{dotnet_build_v2_2}}"
         tags:
           - "2.2"
-      push-dotnet-3_0:
+      push_dotnet_3_0:
         title: "Pushing dotnet 3.0 image to bintray"
         type: "push"
         image_name: "dotnet/sdk"
@@ -52,7 +55,7 @@ steps:
         tags:
           - "3.0"
           - "latest"
-      push-skaffold:
+      push_skaffold:
         title: "Pushing skaffold image to bintray"
         type: "push"
         image_name: "skaffold"
