@@ -1,0 +1,14 @@
+os: linux
+dist: bionic
+language: csharp
+mono: none
+dotnet: 3.0
+
+services:
+    - docker
+
+before_install:
+    - dotnet tool install -g GitVersion.Tool
+    - chmod +x build.sh
+
+script: ./build.sh
